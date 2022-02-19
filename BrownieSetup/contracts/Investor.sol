@@ -26,10 +26,16 @@ contract Investor is Ownable{
     }
 
     function withdrawFromSavingsAccount() external onlyOwner {
-
         savingsAccount.withdraw();
     }
 
-    receive() external payable {} // Default solidity function to enable contract to receive funds retrieved by withdraw function
+
+// Old version, this way withdrawn funds would be trapped inside the smart contract
+//    receive() external payable {} // Default solidity function to enable contract to receive funds retrieved by withdraw function
+
+    // This way, receive function (which processes ETH transfers to this SC) will automatically forward the received eth to the owner's account
+    receive() external payable {
+        payable(owner()).transfer(address(this).balance);
+    }
 
 }

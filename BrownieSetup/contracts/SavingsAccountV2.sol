@@ -1,10 +1,9 @@
 pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-
-
-contract SavingsAccount {
+contract SavingsAccountV2 is ReentrancyGuard{
 
     using Address for address payable;
 
@@ -14,14 +13,15 @@ contract SavingsAccount {
         balanceOf[msg.sender] += msg.value;
     }
 
-    function withdraw() external {
+    function withdraw() external nonReentrant {
+
         uint256 amountDeposited = balanceOf[msg.sender];
 
-        balanceOf[msg.sender] = 0;
-        // This function limits gas forwarded to next contract to 2300
-        // payable(msg.sender).transfer(amountDeposited);
         payable(msg.sender).sendValue(amountDeposited);
 
+        balanceOf[msg.sender] = 0;
     }
+
+
 
 }
